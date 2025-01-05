@@ -1,0 +1,127 @@
+{% extends "layout.html" %} {% block head %}
+<title>Users</title>
+{% endblock %} {% block body %}
+<main class="min-h-screen bg-herringbone">
+  <div class="flex min-h-screen items-center justify-center">
+    <div
+      class="w-11/12 max-w-md rounded-xl bg-white/30 p-4 shadow-xl backdrop-blur-sm duration-500 ease-in-out hover:shadow-2xl sm:max-w-lg sm:p-6 md:max-w-xl md:p-8 lg:max-w-2xl xl:max-w-2xl"
+    >
+      <h1
+        class="mb-5 text-center text-xl font-bold text-indigo-600 sm:text-2xl md:text-3xl"
+      >
+        Users
+      </h1>
+
+      <div class="mb-4 flex justify-between">
+        <div>
+          <form action="/logout" method="POST">
+            <button type="submit">
+              <a
+                class="rounded-xl bg-red-600 px-3 py-2 text-xs text-white hover:bg-red-700"
+              >
+                <i class="fas fa-right-from-bracket"></i>
+              </a>
+            </button>
+          </form>
+        </div>
+        <div>
+          <a
+            href="/dashboard/users/create"
+            class="rounded-xl bg-indigo-600 px-3 py-2 text-xs text-white hover:bg-indigo-700"
+          >
+            <i class="fas fa-plus"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto rounded-xl">
+        <table class="min-w-full bg-white shadow-md">
+          <thead>
+            <tr>
+              <th
+                class="bg-gray-200 px-4 py-2 text-center font-semibold text-gray-700"
+              >
+                Username
+              </th>
+              <th
+                class="bg-gray-200 px-4 py-2 text-center font-semibold text-gray-700"
+              >
+                Role
+              </th>
+              <th
+                class="bg-gray-200 px-4 py-2 text-center font-semibold text-gray-700"
+              >
+                Email
+              </th>
+              <th
+                class="bg-gray-200 px-4 py-2 text-center font-semibold text-gray-700"
+              >
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in users %}
+            <tr class="border-b">
+              <td class="px-4 py-2 text-center text-gray-700">
+                {{ user.username }}
+              </td>
+              <td class="px-4 py-2 text-center text-gray-700">
+                {{ user.role }}
+              </td>
+              <td class="px-4 py-2 text-center text-gray-700">
+                {{ user.email }}
+              </td>
+              <td class="px-4 py-2 text-gray-700">
+                <div class="flex justify-center space-x-3">
+                  <a
+                    href="{{ url_for('main.edit_user', user_id=user.id) }}"
+                    class="text-yellow-500 hover:text-yellow-700"
+                  >
+                    <i class="fas fa-edit"></i>
+                  </a>
+                  <form
+                    id="delete-form-{{ user.id }}"
+                    action="{{ url_for('main.delete_user', user_id=user.id) }}"
+                    method="POST"
+                  >
+                    <input type="hidden" name="_method" value="DELETE" />
+                    <button
+                      type="button"
+                      onclick="confirmDelete(this)"
+                      data-user-id="{{ user.id }}"
+                      class="text-red-500 hover:text-red-700"
+                    >
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  function confirmDelete(button) {
+    const userId = button.getAttribute("data-user-id");
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        document.getElementById("delete-form-" + userId).submit();
+      }
+    });
+  }
+</script>
+{% endblock %}
